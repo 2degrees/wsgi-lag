@@ -13,6 +13,8 @@
 #
 ##############################################################################
 
+from time import sleep
+
 from nose.tools import eq_
 from nose.tools import ok_
 
@@ -26,7 +28,7 @@ class TestLagRecordingMiddleware(object):
     
     def test_response_returned(self):
         """The wrapped application's response is returned unaltered."""
-        middleware = LagRecordingMiddleware(MOCK_WSGI_APP, MockLagRecorder())
+        middleware = LagRecordingMiddleware(_MOCK_WSGI_APP, _MockLagRecorder())
         
         path_info = '/'
         environ = {'PATH_INFO': path_info}
@@ -40,8 +42,8 @@ class TestLagRecordingMiddleware(object):
         exceeded.
         
         """
-        lag_recorder = MockLagRecorder()
-        middleware = LagRecordingMiddleware(MOCK_WSGI_APP, lag_recorder)
+        lag_recorder = _MockLagRecorder()
+        middleware = LagRecordingMiddleware(_SLOW_WSGI_APP, lag_recorder)
         
         environ = {'PATH_INFO': '/'}
         middleware(environ, None)
@@ -54,8 +56,8 @@ class TestLagRecordingMiddleware(object):
         exceeded.
         
         """
-        lag_recorder = MockLagRecorder()
-        middleware = LagRecordingMiddleware(MOCK_WSGI_APP, lag_recorder, 3600)
+        lag_recorder = _MockLagRecorder()
+        middleware = LagRecordingMiddleware(_MOCK_WSGI_APP, lag_recorder, 3600)
         
         environ = {'PATH_INFO': '/'}
         middleware(environ, None)
@@ -66,19 +68,21 @@ class TestLagRecordingMiddleware(object):
 #{ Utilities
 
 
-MOCK_WSGI_APP = lambda environ, start_response: environ['PATH_INFO']
+_MOCK_WSGI_APP = lambda environ, start_response: environ['PATH_INFO']
 
 
-class MockLagRecorder(object):
+_SLOW_WSGI_APP = lambda environ, start_response: sleep(1)
+
+
+class _MockLagRecorder(object):
     
     def __init__(self):
-        super(MockLagRecorder, self).__init__()
+        super(_MockLagRecorder, self).__init__()
         
         self.lag_seconds = None
     
     def __call__(self, lag_seconds, request):
         self.lag_seconds = lag_seconds
-
 
 
 #}
