@@ -45,6 +45,9 @@ setup(
     license='BSD (http://dev.2degreesnetwork.com/p/2degrees-license.html)',
     packages=find_packages(exclude=['tests']),
     zip_safe=False,
-    tests_require = ['coverage', 'nose'],
+    extras_require={
+        'mongodb_recorder': ['pymongo'],
+        },
+    tests_require=['coverage', 'nose'],
     test_suite='nose.collector',
     )
