@@ -12,6 +12,15 @@
 # INFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""
+MongoDB-based :mod:`wsgilag` recorder.
+
+To use the MongoDB lag recorder you need to install *wsgi-lag* with the
+"mongodb" feature enable. For example::
+
+    pip install "wsgi-lag[mongodb_recorder]"
+
+"""
 
 from logging import getLogger
 
@@ -27,9 +36,20 @@ _LOGGER = getLogger(__name__)
 
 
 class MongodbEnvironLagRecorder(BaseEnvironLagRecorder):
-    """MongoDB-based :mod:`wsgilag` recorder."""
+    """
+    PyMongo-based lag recorder which includes WSGI environment items in the
+    entries recorded.
+    
+    """
     
     def __init__(self, mongodb_collection, *environ_keys):
+        """
+        
+        :param mongodb_collection: The collection object which will contain the
+            records
+        :type mongodb_collection: :class:`pymongo.collections.Collection`
+        
+        """
         super(MongodbEnvironLagRecorder, self).__init__(*environ_keys)
         
         self.mongodb_collection = mongodb_collection
